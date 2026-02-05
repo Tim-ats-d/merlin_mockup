@@ -1,4 +1,5 @@
 (executable
- (public_name merlin_mockup)
+ (public_name merlin-mockup)
  (name merlin_mockup)
+ (package merlin-mockup)
  (libraries unix))

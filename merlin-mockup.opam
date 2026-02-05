@@ -5,7 +5,7 @@ homepage: "https://github.com/lyrm/merlin_mockup"
 bug-reports: "https://github.com/lyrm/merlin_mockup/issues"
 depends: [
   "ocaml"
-  "dune" {>= "3.21"}
+  "dune" {>= "3.19"}
   "odoc" {with-doc}
 ]
 build: [

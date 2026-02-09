@@ -9,7 +9,6 @@
   Value of "delta" is 21.
   Value of "epsilon" is 6.
   
-
   $ echo -en "./defs/math\npart 15" | nc localhost 8453
   Value of "alpha" is 4.
   Value of "beta" is 3.
@@ -28,5 +27,4 @@
   Value of "omicron" is 96.
   Value of "pi" is 115.
   
-
   $ kill -INT $PID

@@ -9,7 +9,6 @@
   Value of "delta" is 21.
   Value of "epsilon" is 6.
   
-
   $ echo -en "./defs/fruits\nall" | nc localhost 8453
   Value of "apple" is 13.
   Value of "banana" is 12.
@@ -37,5 +36,4 @@
   Value of "xigua" is 4279.
   Value of "yellowfruit" is 12721.
   
-
   $ kill -INT $PID

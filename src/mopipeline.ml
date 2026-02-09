@@ -8,24 +8,12 @@ type t = {
 
 let process config hermes =
   let parsedtree = Moparser.parse config.Moconfig.source in
-  Effect.Deep.match_with
-    (fun () -> Motyper.run config hermes parsedtree)
-    ()
-    {
-      retc = Fun.id;
-      exnc = raise;
-      effc =
-        (fun (type a) (eff : a Effect.t) ->
-          match eff with
-          | Motyper.Partial (Run evals) ->
-              Some
-                (fun (k : (a, _) Effect.Deep.continuation) ->
-                  Utils.log 1 "Sharing partial result";
-                  Hermes.send_and_wait hermes (Partial evals);
-                  Utils.log 1 "Shared partial result!";
-                  Effect.Deep.continue k ())
-          | _ -> None);
-    }
+  try Motyper.run config hermes parsedtree
+  with effect Motyper.Partial (Run evals), k ->
+    Utils.log 1 "Sharing partial result";
+    Hermes.send_and_wait hermes (Partial evals);
+    Utils.log 1 "Shared partial result!";
+    Effect.Deep.continue k ()
 
 let get config hermes =
   Hermes.send_and_wait hermes (Config config);
@@ -42,8 +30,6 @@ let get config hermes =
       raise exn
   | _ -> failwith "Unexpected message"
 
-let make config shared = process config shared
-
 (** [domain_typer] *)
 let domain_typer hermes =
   let rec loop () =
@@ -59,7 +45,7 @@ let domain_typer hermes =
           loop ()
       | Config config ->
           Utils.log 0 "Beginning new config";
-          let pipeline = make config hermes in
+          let pipeline = process config hermes in
           (match config.completion with
           | All -> Hermes.send_and_wait hermes (Partial pipeline)
           | _ -> (* Already shared *) ());

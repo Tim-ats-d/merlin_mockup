@@ -13,5 +13,4 @@ type msg =
 type partial = Type_implem of typedtree | Run of result
 type _ Effect.t += Partial : partial -> unit Effect.t
 
-val res : typedtree
 val run : Moconfig.t -> msg Hermes.t -> parsedtree -> result

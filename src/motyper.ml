@@ -26,7 +26,6 @@ type _ res =
 let res : typedtree = ref []
 
 let type_structure ~until typedtree env parsedtree =
-  (* let type_structure waiting shared_result env ~until defs = *)
   let rec loop : type a. a res -> env -> int -> parsedtree -> a =
    fun until env count ldefs ->
     Utils.log 1 "Typing defs %d / %d" count (List.length ldefs);
@@ -57,8 +56,7 @@ let type_structure ~until typedtree env parsedtree =
     | `Rest (rest, (v, e)), Partial i when i = count ->
         (res, (v, e) :: env, rest)
     | `Rest (rest, (v, e)), _ ->
-        List.init 50 (fun _ -> Random.int 100)
-        |> List.fold_left ( + ) 0 |> ignore;
+        Utils.stupid_work ();
         loop until ((v, e) :: env) (count + 1) rest
   in
   loop until env 0 parsedtree
@@ -82,19 +80,9 @@ let type_implementation config typedtree parsedtree =
 let run config hermes parsedtree =
   (* Reset "typer" state *)
   res := [];
-  match_with
-    (fun () -> type_implementation config hermes parsedtree)
-    ()
-    {
-      retc = (fun typedtree -> { config; typedtree });
-      exnc = raise;
-      effc =
-        (fun (type a) (eff : a Effect.t) ->
-          match eff with
-          | Partial (Type_implem typedtree) ->
-              Some
-                (fun (k : (a, _) Effect.Deep.continuation) ->
-                  perform (Partial (Run { config; typedtree }));
-                  continue k ())
-          | _ -> None);
-    }
+  try
+    let typedtree = type_implementation config hermes parsedtree in
+    { config; typedtree }
+  with effect Partial (Type_implem typedtree), k ->
+    perform (Partial (Run { config; typedtree }));
+    continue k ()

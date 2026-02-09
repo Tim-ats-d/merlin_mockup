@@ -5,5 +5,4 @@ type t = {
 }
 
 val get : Moconfig.t -> Motyper.msg Hermes.t -> t option
-val make : Moconfig.t -> Motyper.msg Hermes.t -> Motyper.result
 val domain_typer : Motyper.msg Hermes.t -> unit

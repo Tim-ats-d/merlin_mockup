@@ -1,5 +1,6 @@
 (executable
- (public_name merlin-mockup)
  (name merlin_mockup)
+ (public_name merlin-mockup)
  (package merlin-mockup)
- (libraries unix))
+ (modules_without_implementation moconfig)
+ (libraries moparser unix))
